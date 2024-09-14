@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "4336b5de-16ca-4201-80cf-e630b9612b35",
+		"name": "remote-preview",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "29237891"
+	},
+	"item": [
+		{
+			"name": "查看文件列表",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "pageNo",
+							"value": "1",
+							"description": "页码",
+							"type": "text"
+						},
+						{
+							"key": "pageSize",
+							"value": "15",
+							"description": "页面大小",
+							"type": "text"
+						},
+						{
+							"key": "fileNameFuzzy",
+							"value": "cat",
+							"description": "文件名模糊查询",
+							"type": "text"
+						},
+						{
+							"key": "category",
+							"value": "image",
+							"description": "文件类别",
+							"type": "text"
+						},
+						{
+							"key": "filePid",
+							"value": "0",
+							"description": "列表父目录",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:7090/api/file/loadDataList"
+			},
+			"response": []
+		},
+		{
+			"name": "预览视频文件",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:7090/api/file/ts/getVideoInfo/{fileId}"
+			},
+			"response": []
+		},
+		{
+			"name": "预览图片",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:7090/api/file/getImage/{imageFolder}/{imageName}"
+			},
+			"response": []
+		},
+		{
+			"name": "预览其它文件",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:7090/api/file//getFile/{fileId}"
+			},
+			"response": []
+		},
+		{
+			"name": "获取路径信息",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "path",
+							"value": "OqrDpYab0m/APQlKNpW1b",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:7090/api/file/getFolderInfo"
+			},
+			"response": []
+		},
+		{
+			"name": "创建下载链接",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "filePid",
+						"value": "0",
+						"description": "查询目录列表的父目录",
+						"type": "text"
+					},
+					{
+						"key": "currentFileIds",
+						"value": "0",
+						"description": "可以移动的目标目录需要排除该文件的父目录和它本身（如果它本身也是目录）",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": "http://localhost:7090/api/file/createDownloadUrl/{fileId}"
+			},
+			"response": []
+		},
+		{
+			"name": "下载文件",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "filePid",
+						"value": "0",
+						"description": "查询目录列表的父目录",
+						"type": "text"
+					},
+					{
+						"key": "currentFileIds",
+						"value": "0",
+						"description": "可以移动的目标目录需要排除该文件的父目录和它本身（如果它本身也是目录）",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": "http://localhost:7090/api/file/download/{code}"
+			},
+			"response": []
+		}
+	]
+}
