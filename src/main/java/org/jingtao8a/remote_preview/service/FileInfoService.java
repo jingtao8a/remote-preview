@@ -60,4 +60,5 @@ public interface FileInfoService {
 	*/
 	Long deleteByFileId(String fileId);
 
+	void clear();
 }

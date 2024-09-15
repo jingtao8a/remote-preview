@@ -289,7 +289,10 @@
 	<delete id="deleteByFileId" >
 		delete from file_info  where  file_id = #{fileId} 
 	</delete>
-	<!-- 根据FileId更改-->
+    <delete id="deleteTable">
+		delete from file_info
+	</delete>
+    <!-- 根据FileId更改-->
 	<update id="updateByFileId" parameterType="org.jingtao8a.remote_preview.entity.po.FileInfo">
 		UPDATE file_info
 		<set>

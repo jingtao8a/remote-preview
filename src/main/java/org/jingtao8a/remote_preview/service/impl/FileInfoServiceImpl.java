@@ -110,4 +110,9 @@ public class FileInfoServiceImpl implements FileInfoService {
 		return fileInfoMapper.deleteByFileId(fileId);
 	}
 
+//	清空file_info表
+	@Override
+	public void clear() {
+		fileInfoMapper.deleteTable();
+	}
 }

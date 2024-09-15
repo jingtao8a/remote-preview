@@ -27,6 +27,11 @@ class RemotePreviewApplicationTests {
 	private AppConfig appConfig;
 	@Resource
 	private FileInfoService fileInfoService;
+
+	@Test
+	public void clearApp() {
+		fileInfoService.clear();
+	}
 	@Test
 //	@Transactional(rollbackFor = Exception.class)
 	public void initApp() {

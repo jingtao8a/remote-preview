@@ -21,4 +21,6 @@ public interface FileInfoMapper<T,P> extends BaseMapper {
 	*/
 	 Long deleteByFileId(@Param("fileId") String fileId);
 
+	 // 清空fileInfo
+	 Long deleteTable();
 }
