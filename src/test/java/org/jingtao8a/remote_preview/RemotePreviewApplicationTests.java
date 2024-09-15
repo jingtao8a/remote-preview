@@ -1,5 +1,6 @@
 package org.jingtao8a.remote_preview;
 
+import org.apache.commons.io.FileUtils;
 import org.jingtao8a.remote_preview.config.AppConfig;
 import org.jingtao8a.remote_preview.constants.Constants;
 import org.jingtao8a.remote_preview.entity.po.FileInfo;
@@ -7,13 +8,12 @@ import org.jingtao8a.remote_preview.entity.query.FileInfoQuery;
 import org.jingtao8a.remote_preview.enums.FileTypeEnum;
 import org.jingtao8a.remote_preview.enums.FolderTypeEnum;
 import org.jingtao8a.remote_preview.enums.StatusEnum;
-import org.jingtao8a.remote_preview.mapper.FileInfoMapper;
 import org.jingtao8a.remote_preview.service.FileInfoService;
+import org.jingtao8a.remote_preview.utils.ScaleFilter;
 import org.jingtao8a.remote_preview.utils.StringTools;
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -67,9 +67,12 @@ class RemotePreviewApplicationTests {
 				newFileInfo.setFileType(FileTypeEnum.getFileTypeBySuffix(StringTools.getFileSuffix(file.getName())).getType());
 				newFileInfo.setStatus(StatusEnum.TRANSFER.getStatus());
 				newFileInfo.setFilePath(file.getCanonicalPath());
-				if (!newFileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType()) ||
-						!newFileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为除了图片和视频之外的其它类型
+				if (!newFileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType())) {//文件为除了视频之外的其它类型
 					newFileInfo.setStatus(StatusEnum.USING.getStatus());
+				}
+				if (newFileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType()) ||
+						newFileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为视频或图片类型，设置cover路径
+					newFileInfo.setFileCover(Constants.TEMP_FILE_DIR + fileId + ".jpg");
 				}
 				fileInfoList.add(newFileInfo);
 			}
@@ -97,11 +100,33 @@ class RemotePreviewApplicationTests {
 				newFileInfo.setFileType(FileTypeEnum.getFileTypeBySuffix(StringTools.getFileSuffix(file.getName())).getType());
 				newFileInfo.setStatus(StatusEnum.TRANSFER.getStatus());
 				newFileInfo.setFilePath(file.getCanonicalPath());
-				if (!newFileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType()) ||
-						!newFileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为除了图片和视频之外的其它类型
+				if (!newFileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType())) {//文件为除了视频之外的其它类型
 					newFileInfo.setStatus(StatusEnum.USING.getStatus());
 				}
+				if (newFileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType()) ||
+						newFileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为视频或图片类型，设置cover路径
+					newFileInfo.setFileCover(Constants.TEMP_FILE_DIR + fileId + ".jpg");
+				}
 				fileInfoList.add(newFileInfo);
+			}
+		}
+	}
+
+	@Test
+	public void getCoverForImageAndVideo() throws IOException {
+		List<FileInfo> fileInfoList = fileInfoService.findListByParam(new FileInfoQuery());
+		for (FileInfo fileInfo : fileInfoList) {
+			if (fileInfo.getFolderType().equals(FolderTypeEnum.FOLDER.getType())) {//文件为目录，跳过
+				continue;
+			}
+			String coverPath = appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR + fileInfo.getFileId() + Constants.COVER_SUFFIX;
+			if (fileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为图片
+				Boolean created = ScaleFilter.createThumbnailWidthFFmpeg(new File(fileInfo.getFilePath()), Constants.LENGTH_150, new File(coverPath), false);
+				if (!created) {//文件本身很小直接copy一份
+					FileUtils.copyFile(new File(fileInfo.getFilePath()), new File(coverPath));
+				}
+			} else if (fileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType())) {//文件为视频
+				ScaleFilter.createCover4Video(new File(fileInfo.getFilePath()), Constants.LENGTH_150, new File(coverPath));
 			}
 		}
 	}
