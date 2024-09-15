@@ -54,4 +54,5 @@ public class FileInfoQuery extends BaseQuery {
 	private String filePath;
 	private String filePathFuzzy;
 
+	private String[] fileIdArray;
 }

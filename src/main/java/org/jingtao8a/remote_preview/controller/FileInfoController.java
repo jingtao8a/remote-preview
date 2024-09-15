@@ -1,14 +1,17 @@
 package org.jingtao8a.remote_preview.controller;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.jingtao8a.remote_preview.entity.po.FileInfo;
 import org.jingtao8a.remote_preview.entity.query.FileInfoQuery;
+import org.jingtao8a.remote_preview.enums.FolderTypeEnum;
 import org.jingtao8a.remote_preview.service.FileInfoService;
 import org.jingtao8a.remote_preview.vo.PaginationResultVO;
 import org.jingtao8a.remote_preview.vo.ResponseVO;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
-import org.springframework.web.bind.annotation.RequestBody;
+import java.util.List;
+
 /**
 @Description:FileInfoController
 @Date:2024-09-15
@@ -28,4 +31,15 @@ public class FileInfoController extends ABaseController {
 		return getSuccessResponseVO(paginationResultVO);
 	}
 
+	@RequestMapping("/getFolderInfo")
+	public ResponseVO getFolderInfo(@RequestParam("path") String path) {
+		String[] pathArray = path.split("/");
+		FileInfoQuery fileInfoQuery = new FileInfoQuery();
+		fileInfoQuery.setFolderType(FolderTypeEnum.FOLDER.getType());
+		fileInfoQuery.setFileIdArray(pathArray);
+		String orderBy = "field(file_id,\"" + StringUtils.join(pathArray, "\",\"") + "\")";
+		fileInfoQuery.setOrderBy(orderBy);
+		List<FileInfo> fileInfoList = fileInfoService.findListByParam(fileInfoQuery);
+		return getSuccessResponseVO(fileInfoList);
+	}
 }
