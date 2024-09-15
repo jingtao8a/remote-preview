@@ -4,7 +4,11 @@ import org.jingtao8a.remote_preview.config.AppConfig;
 import org.jingtao8a.remote_preview.constants.Constants;
 import org.jingtao8a.remote_preview.entity.po.FileInfo;
 import org.jingtao8a.remote_preview.entity.query.FileInfoQuery;
+import org.jingtao8a.remote_preview.enums.FileTypeEnum;
 import org.jingtao8a.remote_preview.enums.FolderTypeEnum;
+import org.jingtao8a.remote_preview.enums.ResponseCodeEnum;
+import org.jingtao8a.remote_preview.enums.StatusEnum;
+import org.jingtao8a.remote_preview.exception.BusinessException;
 import org.jingtao8a.remote_preview.service.FileInfoService;
 import org.jingtao8a.remote_preview.utils.StringTools;
 import org.jingtao8a.remote_preview.vo.PaginationResultVO;
@@ -52,6 +56,7 @@ public class FileInfoController extends ABaseController {
 	}
 
 	@RequestMapping("/getCover/{coverName}")
+	//coverName默认为fileId.jpg
 	public void getCover(HttpServletResponse response, @PathVariable("coverName") String coverName) {
 		String coverSuffix = StringTools.getFileSuffix(coverName);
 		String filePath = appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR + coverName;
@@ -61,10 +66,21 @@ public class FileInfoController extends ABaseController {
 		response.setHeader("Cache-Control", "max-age=2592000");
 		if (!new File(filePath).exists()) {//文件不存在
 			//do nothing
+			logger.info("cover {} not exist", filePath);
 		}
 		readFile(response, filePath);
 	}
 
-
+	@RequestMapping("/getFile/{fileId}")
+	//获取除了video其它文件信息
+	public void getFile(HttpServletResponse response, @PathVariable("fileId") String fileId) throws BusinessException {
+		FileInfo fileInfo = fileInfoService.selectByFileId(fileId);
+		if (fileInfo == null) {//文件不存在
+			throw new BusinessException(ResponseCodeEnum.CODE_700);
+		}
+		assert(!fileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType()));//getFile不请求video文件
+		assert(fileInfo.getStatus().equals(StatusEnum.USING.getStatus()));//除了video外的其它文件不需要转码
+		readFile(response, fileInfo.getFilePath());
+	}
 
 }
