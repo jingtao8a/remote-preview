@@ -1,5 +1,8 @@
 package org.jingtao8a.remote_preview.controller;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.bcel.Const;
+import org.jingtao8a.remote_preview.annotation.GlobalInterceptor;
+import org.jingtao8a.remote_preview.annotation.VerifyParam;
 import org.jingtao8a.remote_preview.component.RedisComponent;
 import org.jingtao8a.remote_preview.component.RedisUtils;
 import org.jingtao8a.remote_preview.config.AppConfig;
@@ -51,7 +54,8 @@ public class FileInfoController extends ABaseController {
 	}
 
 	@RequestMapping("/getFolderInfo")
-	public ResponseVO getFolderInfo(@RequestParam("path") String path) {
+	@GlobalInterceptor(checkParams = true)
+	public ResponseVO getFolderInfo(@VerifyParam(required = true) @RequestParam("path") String path) {
 		String[] pathArray = path.split("/");
 		FileInfoQuery fileInfoQuery = new FileInfoQuery();
 		fileInfoQuery.setFolderType(FolderTypeEnum.FOLDER.getType());
@@ -63,8 +67,9 @@ public class FileInfoController extends ABaseController {
 	}
 
 	@RequestMapping("/getCover/{coverName}")
+	@GlobalInterceptor(checkParams = true)
 	//coverName默认为fileId.jpg
-	public void getCover(HttpServletResponse response, @PathVariable("coverName") String coverName) {
+	public void getCover(HttpServletResponse response, @VerifyParam(required = true) @PathVariable("coverName") String coverName) {
 		String coverSuffix = StringTools.getFileSuffix(coverName);
 		String filePath = appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR + coverName;
 		coverSuffix = coverSuffix.replace(".", "");
@@ -79,8 +84,10 @@ public class FileInfoController extends ABaseController {
 	}
 
 	@RequestMapping("/getFile/{fileId}")
+	@GlobalInterceptor(checkParams = true)
 	//获取除了video其它文件信息
-	public void getFile(HttpServletResponse response, @PathVariable("fileId") String fileId) throws BusinessException {
+	public void getFile(HttpServletResponse response,
+						@VerifyParam(required=true, min=20, max=20) @PathVariable("fileId") String fileId) throws BusinessException {
 		FileInfo fileInfo = fileInfoService.selectByFileId(fileId);
 		if (fileInfo == null) {//文件不存在
 			throw new BusinessException(ResponseCodeEnum.CODE_700);
@@ -91,7 +98,8 @@ public class FileInfoController extends ABaseController {
 	}
 
 	@RequestMapping("/getVideo/{fileId}")
-	public void getVideo(HttpServletResponse response, @PathVariable("fileId") String fileId) throws BusinessException {
+	@GlobalInterceptor(checkParams = true)
+	public void getVideo(HttpServletResponse response, @VerifyParam(required = true) @PathVariable("fileId") String fileId) throws BusinessException {
 		FileInfo fileInfo = null;
 		String filePath = null;
 		if (fileId.endsWith(".ts")) {//请求的是ts文件，说明video已经转码成功了
@@ -116,7 +124,8 @@ public class FileInfoController extends ABaseController {
 	}
 
 	@RequestMapping("/createDownloadUrl/{fileId}")
-	public ResponseVO createDownloadUrl(@PathVariable("fileId") String fileId) throws BusinessException {
+	@GlobalInterceptor(checkParams = true)
+	public ResponseVO createDownloadUrl(@VerifyParam(required=true, min=20, max=20) @PathVariable("fileId") String fileId) throws BusinessException {
 		FileInfo fileInfo = fileInfoService.selectByFileId(fileId);
 		if (fileInfo == null) {
 			throw new BusinessException(ResponseCodeEnum.CODE_700);
@@ -135,7 +144,9 @@ public class FileInfoController extends ABaseController {
 	}
 
 	@RequestMapping("/download/{code}")
-	public void download(HttpServletRequest request, HttpServletResponse response, @PathVariable("code") String code) throws BusinessException {
+	@GlobalInterceptor(checkParams = true)
+	public void download(HttpServletRequest request, HttpServletResponse response,
+						 @VerifyParam(required = true, min=50, max=50) @PathVariable("code") String code) throws BusinessException {
 		DownloadFileDto downloadFileDto = redisComponent.getDownloadFileDto(code);
 		if (null == downloadFileDto) {
 			throw new BusinessException(ResponseCodeEnum.CODE_801);
