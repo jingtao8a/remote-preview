@@ -1,7 +1,10 @@
 package org.jingtao8a.remote_preview.controller;
 import org.apache.commons.lang3.StringUtils;
+import org.jingtao8a.remote_preview.component.RedisComponent;
+import org.jingtao8a.remote_preview.component.RedisUtils;
 import org.jingtao8a.remote_preview.config.AppConfig;
 import org.jingtao8a.remote_preview.constants.Constants;
+import org.jingtao8a.remote_preview.dto.DownloadFileDto;
 import org.jingtao8a.remote_preview.entity.po.FileInfo;
 import org.jingtao8a.remote_preview.entity.query.FileInfoQuery;
 import org.jingtao8a.remote_preview.enums.FileTypeEnum;
@@ -18,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 import java.util.List;
 import java.io.*;
 
@@ -34,6 +39,8 @@ public class FileInfoController extends ABaseController {
 	private FileInfoService fileInfoService;
 	@Resource
 	private AppConfig appConfig;
+	@Resource
+	private RedisComponent redisComponent;
 	/**
 	 * 分页查询
 	*/
@@ -106,5 +113,45 @@ public class FileInfoController extends ABaseController {
 			filePath = appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR + fileId + "/" + Constants.M3U8_NAME;
 		}
 		readFile(response, filePath);
+	}
+
+	@RequestMapping("/createDownloadUrl/{fileId}")
+	public ResponseVO createDownloadUrl(@PathVariable("fileId") String fileId) throws BusinessException {
+		FileInfo fileInfo = fileInfoService.selectByFileId(fileId);
+		if (fileInfo == null) {
+			throw new BusinessException(ResponseCodeEnum.CODE_700);
+		}
+		if (fileInfo.getFolderType().equals(FolderTypeEnum.FOLDER.getType())) {
+			throw new BusinessException(ResponseCodeEnum.CODE_800);
+		}
+		String downLoadCode = StringTools.getRandomString(Constants.LENGTH_50);
+		DownloadFileDto downloadFileDto = new DownloadFileDto();
+		downloadFileDto.setDownloadCode(downLoadCode);
+		downloadFileDto.setFileName(fileInfo.getFileName());
+		downloadFileDto.setFilePath(fileInfo.getFilePath());
+
+		redisComponent.saveDownloadFileDto(downLoadCode, downloadFileDto);
+		return getSuccessResponseVO(downLoadCode);
+	}
+
+	@RequestMapping("/download/{code}")
+	public void download(HttpServletRequest request, HttpServletResponse response, @PathVariable("code") String code) throws BusinessException {
+		DownloadFileDto downloadFileDto = redisComponent.getDownloadFileDto(code);
+		if (null == downloadFileDto) {
+			throw new BusinessException(ResponseCodeEnum.CODE_801);
+		}
+		String fileName = downloadFileDto.getFileName();
+		response.setContentType("application/x-msdownload; charset=UTF-8");
+		try {
+			if (request.getHeader("User-Agent").toLowerCase().indexOf("mise") > 0) {//IE浏览器
+				fileName = URLEncoder.encode(fileName, "UTF-8");
+			} else {//其它浏览器
+				fileName = new String(fileName.getBytes("UTF-8"), "ISO8859-1");
+			}
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+		response.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+		readFile(response, downloadFileDto.getFilePath());
 	}
 }

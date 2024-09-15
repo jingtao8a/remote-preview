@@ -13,8 +13,9 @@ public enum ResponseCodeEnum {
     CODE_601(601, "信息已经存在"),
     CODE_700(700, "请求文件不存在"),
     CODE_701(701, "请求文件转码失败"),
-    CODE_702(702, "请求文件转码中");
-
+    CODE_702(702, "请求文件转码中"),
+    CODE_800(800,"目录不能下载"),
+    CODE_801(801, "downloadCode已经失效" );
     private Integer code;
     private String msg;
 }
