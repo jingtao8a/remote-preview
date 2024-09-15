@@ -34,7 +34,7 @@ class RemotePreviewApplicationTests {
 	}
 	@Test
 //	@Transactional(rollbackFor = Exception.class)
-	public void initApp() {
+	public void initApp() throws IOException {
 		System.out.println(appConfig.getRemotePreviewMaterial());
 //		System.out.println(appConfig.getLogRootLevel());
 		File remotePreviewMaterialDir = new File(appConfig.getRemotePreviewMaterial());
@@ -66,13 +66,14 @@ class RemotePreviewApplicationTests {
 				newFileInfo.setFolderType(FolderTypeEnum.FILE.getType());
 				newFileInfo.setFileType(FileTypeEnum.getFileTypeBySuffix(StringTools.getFileSuffix(file.getName())).getType());
 				newFileInfo.setStatus(StatusEnum.TRANSFER.getStatus());
+				newFileInfo.setFilePath(file.getCanonicalPath());
 				fileInfoList.add(newFileInfo);
 			}
 		}
 //		System.out.println(fileInfoList);
 		fileInfoService.addBatch(fileInfoList);
 	}
-	void traverseDirectory(List<FileInfo> fileInfoList, File dir, String dirFileId) {
+	void traverseDirectory(List<FileInfo> fileInfoList, File dir, String dirFileId) throws IOException {
 		File[] fileList = dir.listFiles();
 		for (File file : fileList) {
 			FileInfo newFileInfo = new FileInfo();
@@ -91,6 +92,7 @@ class RemotePreviewApplicationTests {
 				newFileInfo.setFolderType(FolderTypeEnum.FILE.getType());
 				newFileInfo.setFileType(FileTypeEnum.getFileTypeBySuffix(StringTools.getFileSuffix(file.getName())).getType());
 				newFileInfo.setStatus(StatusEnum.TRANSFER.getStatus());
+				newFileInfo.setFilePath(file.getCanonicalPath());
 				fileInfoList.add(newFileInfo);
 			}
 		}
