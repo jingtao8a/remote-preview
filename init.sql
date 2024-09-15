@@ -1,6 +1,6 @@
 CREATE SCHEMA `remote-preview` ;
 
-DROP TABLE `remote-preview`.`file_info`
+DROP TABLE `remote-preview`.`file_info`;
 CREATE TABLE `remote-preview`.`file_info` (
   `file_id` VARCHAR(20) NOT NULL COMMENT '文件id',
   `file_pid` VARCHAR(20) NULL COMMENT '文件父id',
