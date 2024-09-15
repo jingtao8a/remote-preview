@@ -67,6 +67,10 @@ class RemotePreviewApplicationTests {
 				newFileInfo.setFileType(FileTypeEnum.getFileTypeBySuffix(StringTools.getFileSuffix(file.getName())).getType());
 				newFileInfo.setStatus(StatusEnum.TRANSFER.getStatus());
 				newFileInfo.setFilePath(file.getCanonicalPath());
+				if (!newFileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType()) ||
+						!newFileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为除了图片和视频之外的其它类型
+					newFileInfo.setStatus(StatusEnum.USING.getStatus());
+				}
 				fileInfoList.add(newFileInfo);
 			}
 		}
@@ -93,6 +97,10 @@ class RemotePreviewApplicationTests {
 				newFileInfo.setFileType(FileTypeEnum.getFileTypeBySuffix(StringTools.getFileSuffix(file.getName())).getType());
 				newFileInfo.setStatus(StatusEnum.TRANSFER.getStatus());
 				newFileInfo.setFilePath(file.getCanonicalPath());
+				if (!newFileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType()) ||
+						!newFileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为除了图片和视频之外的其它类型
+					newFileInfo.setStatus(StatusEnum.USING.getStatus());
+				}
 				fileInfoList.add(newFileInfo);
 			}
 		}
