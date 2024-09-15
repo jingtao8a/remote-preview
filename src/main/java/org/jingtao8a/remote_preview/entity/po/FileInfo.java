@@ -37,4 +37,12 @@ public class FileInfo implements Serializable {
 	 * 0:转码中 1：转码失败 2：转码成功
 	*/
 	private Integer status;
+	/**
+	 * 封面（图片、视频）
+	*/
+	private String fileCover;
+	/**
+	 * 文件路径
+	*/
+	private String filePath;
 }
