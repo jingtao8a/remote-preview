@@ -28,14 +28,8 @@
 						},
 						{
 							"key": "fileNameFuzzy",
-							"value": "cat",
+							"value": "",
 							"description": "文件名模糊查询",
-							"type": "text"
-						},
-						{
-							"key": "category",
-							"value": "image",
-							"description": "文件类别",
 							"type": "text"
 						},
 						{
@@ -51,33 +45,6 @@
 			"response": []
 		},
 		{
-			"name": "预览视频文件",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:7090/api/file/ts/getVideoInfo/{fileId}"
-			},
-			"response": []
-		},
-		{
-			"name": "预览图片",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:7090/api/file/getImage/{imageFolder}/{imageName}"
-			},
-			"response": []
-		},
-		{
-			"name": "预览其它文件",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:7090/api/file//getFile/{fileId}"
-			},
-			"response": []
-		},
-		{
 			"name": "获取路径信息",
 			"request": {
 				"method": "POST",
@@ -87,12 +54,39 @@
 					"formdata": [
 						{
 							"key": "path",
-							"value": "OqrDpYab0m/APQlKNpW1b",
+							"value": "4PLwekRdpYHZmEtyPR0W/9fR770ElGNQ2J1lPUtLZ/a5sbEdbTscV7bmmLHX1q",
 							"type": "text"
 						}
 					]
 				},
 				"url": "http://localhost:7090/api/file/getFolderInfo"
+			},
+			"response": []
+		},
+		{
+			"name": "获取封面(视频、图片)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:7090/api/file/getCover/{fileId.jpg}"
+			},
+			"response": []
+		},
+		{
+			"name": "预览其它文件",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:7090/api/file/getFile/2Uc32g93EgsaxWQuCl4t"
+			},
+			"response": []
+		},
+		{
+			"name": "预览视频文件",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:7090/api/file/getVideo/lb2AdQQLbGHd7zSG203I"
 			},
 			"response": []
 		},
@@ -118,7 +112,7 @@
 					"mode": "formdata",
 					"formdata": []
 				},
-				"url": "http://localhost:7090/api/file/createDownloadUrl/{fileId}"
+				"url": "http://localhost:7090/api/file/createDownloadUrl/ahdmmm90hb80N761wygL"
 			},
 			"response": []
 		},
@@ -147,7 +141,7 @@
 					"mode": "formdata",
 					"formdata": []
 				},
-				"url": "http://localhost:7090/api/file/download/{code}"
+				"url": "http://localhost:7090/api/file/download/{downloadCode}"
 			},
 			"response": []
 		}
