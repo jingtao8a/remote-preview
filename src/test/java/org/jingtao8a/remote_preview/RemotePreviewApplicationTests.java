@@ -14,6 +14,7 @@ import org.jingtao8a.remote_preview.utils.StringTools;
 import org.junit.jupiter.api.Test;
 import org.slf4j.*;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -27,7 +28,8 @@ class RemotePreviewApplicationTests {
 	private AppConfig appConfig;
 	@Resource
 	private FileInfoService fileInfoService;
-
+	@Resource
+	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 	@Test
 	public void clearApp() {
 		fileInfoService.clear();
@@ -119,15 +121,23 @@ class RemotePreviewApplicationTests {
 			if (fileInfo.getFolderType().equals(FolderTypeEnum.FOLDER.getType())) {//文件为目录，跳过
 				continue;
 			}
-			String coverPath = appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR + fileInfo.getFileId() + Constants.COVER_SUFFIX;
-			if (fileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为图片
-				Boolean created = ScaleFilter.createThumbnailWidthFFmpeg(new File(fileInfo.getFilePath()), Constants.LENGTH_150, new File(coverPath), false);
-				if (!created) {//文件本身很小直接copy一份
-					FileUtils.copyFile(new File(fileInfo.getFilePath()), new File(coverPath));
+			threadPoolTaskExecutor.submit(() -> {
+				String coverPath = appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR + fileInfo.getFileId() + Constants.COVER_SUFFIX;
+				if (fileInfo.getFileType().equals(FileTypeEnum.IMAGE.getType())) {//文件为图片
+					Boolean created = ScaleFilter.createThumbnailWidthFFmpeg(new File(fileInfo.getFilePath()), Constants.LENGTH_150, new File(coverPath), false);
+					if (!created) {//文件本身很小直接copy一份
+						try {
+							FileUtils.copyFile(new File(fileInfo.getFilePath()), new File(coverPath));
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				} else if (fileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType())) {//文件为视频
+					ScaleFilter.createCover4Video(new File(fileInfo.getFilePath()), Constants.LENGTH_150, new File(coverPath));
 				}
-			} else if (fileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType())) {//文件为视频
-				ScaleFilter.createCover4Video(new File(fileInfo.getFilePath()), Constants.LENGTH_150, new File(coverPath));
-			}
+			});
+
 		}
+		threadPoolTaskExecutor.shutdown();
 	}
 }
