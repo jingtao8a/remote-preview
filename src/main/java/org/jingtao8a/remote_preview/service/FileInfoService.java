@@ -2,6 +2,7 @@ package org.jingtao8a.remote_preview.service;
 import java.util.List;
 import org.jingtao8a.remote_preview.entity.po.FileInfo;
 import org.jingtao8a.remote_preview.entity.query.FileInfoQuery;
+import org.jingtao8a.remote_preview.exception.BusinessException;
 import org.jingtao8a.remote_preview.vo.PaginationResultVO;
 
 /**
@@ -61,4 +62,6 @@ public interface FileInfoService {
 	Long deleteByFileId(String fileId);
 
 	void clear();
+
+	void transferVideo(FileInfo fileId) throws BusinessException;
 }

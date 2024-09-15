@@ -1,9 +1,11 @@
 package org.jingtao8a.remote_preview.config;
 
+import org.jingtao8a.remote_preview.entity.po.FileInfo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
 
@@ -21,6 +23,11 @@ public class CustomConfig {
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(600);
         return executor;
+    }
+
+    @Bean("fileIdMapForTransferVideo")
+    public ConcurrentHashMap<String, FileInfo> fileIdMapForTransferVideo() {
+        return new ConcurrentHashMap<>();
     }
 
 }

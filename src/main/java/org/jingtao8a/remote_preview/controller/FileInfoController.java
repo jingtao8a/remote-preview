@@ -83,4 +83,28 @@ public class FileInfoController extends ABaseController {
 		readFile(response, fileInfo.getFilePath());
 	}
 
+	@RequestMapping("/getVideo/{fileId}")
+	public void getVideo(HttpServletResponse response, @PathVariable("fileId") String fileId) throws BusinessException {
+		FileInfo fileInfo = null;
+		String filePath = null;
+		if (fileId.endsWith(".ts")) {//请求的是ts文件，说明video已经转码成功了
+			String realFileId = fileId.split("_")[0];
+			filePath = appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR + realFileId + "/" + fileId;
+		} else {
+			fileInfo = fileInfoService.selectByFileId(fileId);
+			if (fileInfo == null) {//文件不存在
+				throw new BusinessException(ResponseCodeEnum.CODE_700);
+			}
+			assert(fileInfo.getFileType().equals(FileTypeEnum.VIDEO.getType()));//默认请求video文件
+			if (fileInfo.getStatus().equals(StatusEnum.TRANSFER_FAIL.getStatus())) {
+				throw new BusinessException(ResponseCodeEnum.CODE_701);
+			}
+			if (fileInfo.getStatus().equals(StatusEnum.TRANSFER.getStatus())) {
+				fileInfoService.transferVideo(fileInfo);
+				throw new BusinessException(ResponseCodeEnum.CODE_702);
+			}
+			filePath = appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR + fileId + "/" + Constants.M3U8_NAME;
+		}
+		readFile(response, filePath);
+	}
 }
