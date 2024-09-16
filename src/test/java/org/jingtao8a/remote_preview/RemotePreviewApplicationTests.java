@@ -64,7 +64,7 @@ class RemotePreviewApplicationTests {
 				fileInfoList.add(newFileInfo);
 				traverseDirectory(fileInfoList, file, fileId);
 			} else if (file.isFile()) {//文件
-				newFileInfo.setFileSize(file.getTotalSpace());
+				newFileInfo.setFileSize(file.length());
 				newFileInfo.setFolderType(FolderTypeEnum.FILE.getType());
 				newFileInfo.setFileType(FileTypeEnum.getFileTypeBySuffix(StringTools.getFileSuffix(file.getName())).getType());
 				newFileInfo.setStatus(StatusEnum.TRANSFER.getStatus());
@@ -97,7 +97,7 @@ class RemotePreviewApplicationTests {
 				fileInfoList.add(newFileInfo);
 				traverseDirectory(fileInfoList, file, fileId);
 			} else if (file.isFile()) {//文件
-				newFileInfo.setFileSize(file.getTotalSpace());
+				newFileInfo.setFileSize(file.length());
 				newFileInfo.setFolderType(FolderTypeEnum.FILE.getType());
 				newFileInfo.setFileType(FileTypeEnum.getFileTypeBySuffix(StringTools.getFileSuffix(file.getName())).getType());
 				newFileInfo.setStatus(StatusEnum.TRANSFER.getStatus());
