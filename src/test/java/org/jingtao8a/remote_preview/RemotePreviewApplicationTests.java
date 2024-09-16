@@ -159,4 +159,11 @@ class RemotePreviewApplicationTests {
 		}
 		threadPoolTaskExecutor.shutdown();
 	}
+
+	@Test
+	public void allTest() throws IOException {
+		clearApp();
+		initApp();
+		getCoverForImageAndVideo();
+	}
 }
