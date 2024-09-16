@@ -43,7 +43,7 @@ public class ScaleFilter {
 
     public static void createCover4Video(File sourceFile, Integer width, File targetFile) {
         try {
-            String cmd = "ffmpeg -i %s -y -vframes 1 -vf scale=%d:%d/a %s";
+            String cmd = "ffmpeg -i \"%s\" -y -vframes 1 -vf scale=%d:%d/a %s";
             ProcessUtils.executeCommand(String.format(cmd, sourceFile.getAbsoluteFile(), width, width, targetFile.getAbsoluteFile()), false);
         } catch (Exception e) {
             logger.error("生成视频封面失败", e);
@@ -52,7 +52,7 @@ public class ScaleFilter {
 
     public static void compressImage(File sourceFile, Integer width, File targetFile, Boolean delSource) {
         try {
-            String cmd = "ffmpeg -i %s -vf scale=%d:-1 %s -y";
+            String cmd = "ffmpeg -i \"%s\" -vf scale=%d:-1 %s -y";
             ProcessUtils.executeCommand(String.format(cmd, sourceFile.getAbsoluteFile(), width, targetFile.getAbsoluteFile()), false);
             if (delSource) {
                 FileUtils.forceDelete(sourceFile);
