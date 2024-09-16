@@ -17,7 +17,7 @@ project.folder=D:/remote-preview
 #资源路径
 remote.preview.material=D:/video-materials
 ```
-运行RemotePreviewApplicationTests载入数据后，启动
+依次运行RemotePreviewApplicationTests三个test载入数据后，启动
 
 ***
 ### 使用技术
