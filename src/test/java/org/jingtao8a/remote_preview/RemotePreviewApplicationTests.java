@@ -30,8 +30,26 @@ class RemotePreviewApplicationTests {
 	private FileInfoService fileInfoService;
 	@Resource
 	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+	public static boolean deleteFile(File dirFile) {
+		// 如果dir对应的文件不存在，则退出
+		if (!dirFile.exists()) {
+			return false;
+		}
+
+		if (dirFile.isFile()) {
+			return dirFile.delete();
+		} else {
+
+			for (File file : dirFile.listFiles()) {
+				deleteFile(file);
+			}
+		}
+
+		return dirFile.delete();
+	}
 	@Test
 	public void clearApp() {
+		deleteFile(new File(appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR));
 		fileInfoService.clear();
 	}
 	@Test
@@ -117,6 +135,7 @@ class RemotePreviewApplicationTests {
 	@Test
 	public void getCoverForImageAndVideo() throws IOException {
 		List<FileInfo> fileInfoList = fileInfoService.findListByParam(new FileInfoQuery());
+		System.out.println(fileInfoList.size() + "\n\n\n\n\n\n");
 		for (FileInfo fileInfo : fileInfoList) {
 			if (fileInfo.getFolderType().equals(FolderTypeEnum.FOLDER.getType())) {//文件为目录，跳过
 				continue;
