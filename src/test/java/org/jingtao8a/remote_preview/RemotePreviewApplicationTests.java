@@ -136,6 +136,10 @@ class RemotePreviewApplicationTests {
 	public void getCoverForImageAndVideo() throws IOException {
 		List<FileInfo> fileInfoList = fileInfoService.findListByParam(new FileInfoQuery());
 		System.out.println(fileInfoList.size() + "\n\n\n\n\n\n");
+		File folder = new File(appConfig.getProjectFolder() + Constants.TEMP_FILE_DIR);
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
 		for (FileInfo fileInfo : fileInfoList) {
 			if (fileInfo.getFolderType().equals(FolderTypeEnum.FOLDER.getType())) {//文件为目录，跳过
 				continue;
